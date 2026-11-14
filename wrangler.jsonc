@@ -11,6 +11,6 @@
     "run_worker_first": ["/api/*"]
   },
   "kv_namespaces": [
-    { "binding": "ORINOCO_FORMS_QUEUE", "id": "<ID_DEL_NAMESPACE>" }
+    { "binding": "ORINOCO_FORMS_QUEUE", "id": "6d6e123d2b664c9e82be6830e9b7328e" }
   ]
 }

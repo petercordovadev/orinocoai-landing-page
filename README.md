@@ -31,11 +31,11 @@ Astro valida las variables con `astro:env` y falla el build si faltan.
 | Variable | Contexto | Obligatoria | Descripción |
 | --- | --- | --- | --- |
 | `PUBLIC_CAL_URL` | Cliente | Sí | URL completa del evento de Cal.com. Ejemplo: `https://cal.com/petercordovadev/auditoria` |
-| `PUBLIC_FORM_ENDPOINT` | Cliente | Sí | Endpoint que recibe el formulario de contacto por `POST` en JSON |
+| `PUBLIC_FORM_ENDPOINT` | Cliente | Sí | Endpoint que recibe el formulario por `POST` en JSON. En producción: `/api/contacto` |
 
 Ambas son públicas: se incluyen en el HTML y en el JavaScript del navegador. **No pongas secretos en variables `PUBLIC_*`.**
 
-En Cloudflare Pages, configúralas en **Settings → Environment variables** para Production y Preview. Si tu proyecto necesita fijar la versión de Node, añade `NODE_VERSION=22.23.4`.
+En Cloudflare Workers Builds, configúralas en **Settings → Build → Build variables and secrets** para Production y Preview. Las de **Settings → Variables & Secrets** son solo de runtime y `npm run build` no las recibe. Si tu proyecto necesita fijar la versión de Node, añade `NODE_VERSION=22.23.4`.
 
 ## Comandos
 
@@ -58,6 +58,8 @@ npm run check && npm run build
 ```text
 docs/
   state-machines.md       Contrato de estados de formulario, Cal, menú, FAQ y build
+worker/
+  index.ts                API del formulario (/api/contacto) y bandeja protegida
 src/
   assets/                 Ilustraciones propias (hero, servicios, blog)
   components/             Header, footer, tarjetas, formulario, embed de Cal.com, SEO...
@@ -175,42 +177,49 @@ Contrato del payload:
 Requisitos del endpoint:
 
 - Aceptar `Content-Type: application/json`.
-- Responder al preflight `OPTIONS` con las cabeceras CORS adecuadas.
 - Devolver un estado `2xx` cuando el mensaje se recibe correctamente.
-- Permitir CORS desde `https://orinocoaisolutions.com` y, en desarrollo, desde `http://localhost:4321`.
 - No redirigir la petición: el formulario muestra el éxito o el error en la misma página.
 - Responder en menos de 15 segundos (el cliente cancela la petición después).
 
+El endpoint de producción es `/api/contacto`, servido por el Worker del sitio (`worker/index.ts`). Al ser mismo origen, no hay preflight ni CORS. El Worker valida el payload, escribe en el KV `ORINOCO_FORMS_QUEUE` y responde JSON.
+
+La bandeja de lectura vive en `/api/admin/messages` y exige `Authorization: Bearer <ADMIN_TOKEN>`. `ADMIN_TOKEN` es un secreto del Worker, nunca una variable `PUBLIC_*`.
+
 El formulario incluye un campo honeypot llamado `website`. Si llega con contenido, se ignora el envío. No sustituyas el honeypot por una validación que bloquee usuarios reales.
 
-El endpoint de `.env.example` es un placeholder. `PUBLIC_FORM_ENDPOINT` es obligatoria para `astro:env`, así que un build sin la variable falla. El estado `unconfigured` del formulario es una defensa para valores vacíos o inválidos y muestra el enlace de correo directo.
+`PUBLIC_FORM_ENDPOINT` es obligatoria para `astro:env`, así que un build sin la variable falla. El estado `unconfigured` del formulario es una defensa para valores vacíos o inválidos y muestra el enlace de correo directo.
 
-## Despliegue en Cloudflare Pages
+## Despliegue en Cloudflare Workers
 
-1. Sube el repositorio a GitHub, GitLab o Bitbucket.
-2. En Cloudflare, entra en **Workers & Pages → Create → Pages → Connect to Git**.
-3. Selecciona el repositorio.
-4. Configura el build:
-   - **Framework preset:** Astro (o “None”)
+El sitio se despliega como **Worker con static assets**, no como Pages. `wrangler.jsonc` declara el entrypoint de la API (`worker/index.ts`), el directorio de assets (`./dist`) y el binding de KV.
+
+1. Sube el repositorio a GitHub.
+2. En Cloudflare, entra en **Workers & Pages → Create → Connect to Git** y selecciona el repositorio.
+3. Configura el build:
    - **Build command:** `npm run build`
-   - **Build output directory:** `dist`
+   - **Deploy command:** `npx wrangler deploy` (por defecto)
    - **Root directory:** `/`
-5. Añade `PUBLIC_CAL_URL` y `PUBLIC_FORM_ENDPOINT` en **Environment variables** (Production y Preview).
+4. Añade en **Settings → Build → Build variables and secrets** (Production y Preview):
+   - `PUBLIC_CAL_URL`
+   - `PUBLIC_FORM_ENDPOINT=/api/contacto`
+5. Añade el secreto `ADMIN_TOKEN` en **Settings → Variables & Secrets**.
 6. Despliega.
-7. En **Custom domains**, añade `orinocoaisolutions.com` y el dominio `www` si lo usas. Configura el DNS según indique Cloudflare.
+7. En **Settings → Domains & Routes**, añade `orinocoaisolutions.com` y el dominio `www` si lo usas. Configura el DNS según indique Cloudflare.
 8. En **Metrics → Web Analytics**, activa la analítica. Cloudflare la inyecta automáticamente en las páginas; no hay token que pegar en el código.
 
 El archivo `.nvmrc` fija Node `22.23.4`. Si Cloudflare usa otra versión, define `NODE_VERSION=22.23.4` en las variables de entorno del proyecto.
 
 ### Cabeceras y caché
 
-`public/_headers` se copia a `dist/_headers` y Cloudflare Pages lo aplica:
+`public/_headers` se copia a `dist/_headers` y Workers static assets lo aplica:
 
 - Cabeceras de seguridad básicas (`nosniff`, `X-Frame-Options`, `Referrer-Policy`, HSTS, Permissions-Policy).
 - `Content-Security-Policy` con `frame-ancestors 'none'`, `base-uri 'self'`, `object-src 'none'` y `form-action 'self'`.
 - `X-Permitted-Cross-Domain-Policies: none`.
 - Caché inmutable de un año para los assets con hash de `/_astro/*`.
 - Caché de una hora para `/rss.xml`.
+
+Las respuestas de `/api/*` las genera el Worker, así que `_headers` no se aplica a ellas: el propio código añade `Cache-Control: no-store` y `X-Content-Type-Options: nosniff`.
 
 La CSP de scripts y estilos se genera en build con `security.csp` de Astro (`astro.config.mjs`). Astro calcula los hashes SHA-256 de los scripts inline de cada página y añade `https://cal.com` como origen permitido para el embed. La política de `frame-ancestors` va en `_headers` porque los navegadores ignoran esa directiva dentro de `<meta>`.
 
