@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "orinocoai-landing-page",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-11-14",
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  },
+  "kv_namespaces": [
+    { "binding": "ORINOCO_FORMS_QUEUE", "id": "<ID_DEL_NAMESPACE>" }
+  ]
+}
