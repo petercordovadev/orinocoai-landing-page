@@ -1,0 +1,170 @@
+---
+import CalEmbed from '../components/CalEmbed.astro';
+import ContactForm from '../components/ContactForm.astro';
+import PageHero from '../components/PageHero.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site, socialLinks } from '../data/site';
+import { cal } from '../lib/cal';
+import { absoluteUrl, organizationId } from '../lib/jsonld';
+
+const contactJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: 'Contacto de Orinoco AI Solutions',
+  url: absoluteUrl('/contacto/'),
+  inLanguage: 'es',
+  mainEntity: { '@id': organizationId },
+};
+
+const expectations = [
+  {
+    title: 'Cuéntame el contexto',
+    text: 'Qué proceso, herramienta o tarea te está consumiendo tiempo. No hace falta que tengas claro qué solución necesitas.',
+  },
+  {
+    title: 'Reviso el caso',
+    text: 'Te respondo por correo con una lectura inicial y, si tiene sentido, te propongo una llamada corta para profundizar.',
+  },
+  {
+    title: 'Decidimos el siguiente paso',
+    text: 'Si encaja, definimos un alcance concreto. Si no, te lo digo con claridad y te orientaré hacia lo que sí puede ayudar.',
+  },
+];
+---
+
+<BaseLayout
+  title="Contacto | Orinoco AI Solutions"
+  description="Cuéntame qué proceso o tarea está frenando tu operación. Escríbeme por correo o agenda una llamada con Orinoco AI Solutions."
+  keywords={['contacto Orinoco AI Solutions', 'agendar llamada automatización', 'consultoría IA']}
+  jsonLd={contactJsonLd}
+>
+  <PageHero
+    eyebrow="Contacto"
+    title="Cuéntame qué está frenando tu operación."
+    description="No necesitas un brief perfecto. Con un correo o una llamada corta podemos ver si hay algo que valga la pena resolver."
+    breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Contacto' }]}
+  />
+
+  <section class="container-page py-14 md:py-20">
+    <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
+      <div>
+        <div class="mb-6 flex items-center gap-3">
+          <span class="h-px w-8 bg-amber" aria-hidden="true"></span>
+          <h2 class="font-display text-sm font-medium uppercase tracking-[0.16em] text-cyan">Escríbeme</h2>
+        </div>
+        <ContactForm />
+      </div>
+
+      <aside class="space-y-5">
+        <div class="card p-6">
+          <h2 class="font-display text-lg font-semibold text-ink">Contacto directo</h2>
+          <p class="mt-2 text-sm leading-6 text-muted">
+            Si prefieres el correo de toda la vida, escríbeme directamente. Leo y respondo personalmente.
+          </p>
+          <a
+            href={`mailto:${site.email}`}
+            class="mt-5 flex items-center gap-3 rounded-xl border border-river/30 bg-night/50 px-4 py-3 text-sm text-ink transition-colors hover:border-cyan/50 hover:text-cyan"
+          >
+            <svg class="h-4 w-4 shrink-0 text-cyan" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <rect x="2.5" y="4" width="15" height="12" rx="2" stroke="currentColor" stroke-width="1.4" />
+              <path d="m3.5 5.5 6.5 5 6.5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="break-all">{site.email}</span>
+          </a>
+
+          <div class="mt-5 border-t border-white/5 pt-5">
+            <p class="text-xs uppercase tracking-[0.14em] text-muted">Redes</p>
+            <ul class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+              {
+                socialLinks.map((social) => (
+                  <li>
+                    <a
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-ink/85 transition-colors hover:text-cyan"
+                    >
+                      {social.name}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-amber/30 bg-amber/5 p-6">
+          <h2 class="font-display text-lg font-semibold text-ink">¿Prefieres hablar?</h2>
+          <p class="mt-2 text-sm leading-6 text-muted">
+            Agenda una llamada de diagnóstico. Revisamos tu caso y salimos con una idea clara de por dónde
+            empezar.
+          </p>
+          <a
+            href={cal.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group mt-5 inline-flex items-center gap-2 rounded-full bg-amber px-5 py-2.5 text-sm font-medium text-night transition-colors hover:bg-[#f2b65b]"
+          >
+            Ver disponibilidad
+            <svg class="h-4 w-4 transition-transform group-hover:translate-x-0.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h9.5M8.5 3.5 13 8l-4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+          <p class="mt-3 text-[0.7rem] leading-5 text-muted/80">
+            Se abrirá {cal.host} en una pestaña nueva.
+          </p>
+        </div>
+
+        <div class="card p-6">
+          <h2 class="font-display text-lg font-semibold text-ink">Qué pasa después</h2>
+          <ol class="mt-5 space-y-4">
+            {
+              expectations.map((item, index) => (
+                <li class="flex gap-4">
+                  <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-river/35 bg-river/10 font-display text-xs font-medium text-cyan">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <div>
+                    <h3 class="font-display text-sm font-medium text-ink">{item.title}</h3>
+                    <p class="mt-1 text-sm leading-6 text-muted">{item.text}</p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="border-y border-white/5 bg-surface/35">
+    <div class="container-page py-16 md:py-24">
+      <div class="mx-auto max-w-3xl text-center">
+        <p class="eyebrow justify-center">Agenda</p>
+        <h2 class="mt-5 text-3xl font-semibold text-ink md:text-4xl">Elige un horario que te sirva.</h2>
+        <p class="mt-4 text-base leading-7 text-muted">
+          La agenda se carga al acercarte a esta sección o cuando pulsas el botón. Si algo falla, siempre puedes
+          abrirla en una pestaña nueva.
+        </p>
+      </div>
+      <div class="mx-auto mt-10 max-w-4xl">
+        <CalEmbed />
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page py-16 md:py-20">
+    <div class="mx-auto max-w-3xl rounded-2xl border border-white/5 bg-night/40 p-6 text-center md:p-8">
+      <h2 class="font-display text-xl font-semibold text-ink">Antes de escribir</h2>
+      <p class="mt-3 text-sm leading-7 text-muted">
+        No compartas contraseñas, claves de API ni datos sensibles en el formulario. Para el diagnóstico
+        inicial basta con una descripción del proceso y las herramientas implicadas.
+      </p>
+      <p class="mt-4 text-xs leading-6 text-muted/80">
+        Al enviar el formulario aceptas la
+        <a href="/privacidad/" class="link-inline">política de privacidad</a>. Si prefieres no usar el
+        formulario, escribe a <a href={`mailto:${site.email}`} class="link-inline">{site.email}</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

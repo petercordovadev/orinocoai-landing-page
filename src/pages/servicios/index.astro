@@ -1,0 +1,147 @@
+---
+import Button from '../../components/Button.astro';
+import CtaBanner from '../../components/CtaBanner.astro';
+import PageHero from '../../components/PageHero.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { cal } from '../../lib/cal';
+import { getServices } from '../../lib/content';
+import { absoluteUrl } from '../../lib/jsonld';
+
+const services = await getServices();
+
+const servicesJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Servicios de Orinoco AI Solutions',
+  itemListElement: services.map((service, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: service.data.title,
+    url: absoluteUrl(`/servicios/${service.id}/`),
+  })),
+};
+
+const steps = [
+  {
+    number: '01',
+    title: 'Diagnóstico',
+    text: 'Revisamos el proceso, las herramientas y los datos. Identificamos qué está frenando la operación y qué merece la pena resolver primero.',
+  },
+  {
+    number: '02',
+    title: 'Implementación',
+    text: 'Construimos la automatización, el agente o la integración. Probamos con casos reales y dejamos el flujo documentado.',
+  },
+  {
+    number: '03',
+    title: 'Soporte',
+    text: 'Acompañamos la puesta en marcha, revisamos el comportamiento y ajustamos lo necesario para que siga funcionando.',
+  },
+];
+---
+
+<BaseLayout
+  title="Servicios de automatización e IA para negocios | Orinoco AI Solutions"
+  description="Automatización de procesos, agentes de IA e integraciones entre herramientas. Soluciones concretas para reducir trabajo manual y ordenar tu operación."
+  keywords={['servicios de automatización', 'agentes de IA', 'integraciones de herramientas', 'IA para negocios']}
+  jsonLd={servicesJsonLd}
+>
+  <PageHero
+    eyebrow="Servicios"
+    title="Automatización e IA aplicada, sin humo."
+    description="Tres formas de resolver cuellos de botella reales. Empezamos por entender tu operación y elegimos la tecnología después, no al revés."
+    breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Servicios' }]}
+  >
+    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+      <Button href={cal.href} size="lg">Agenda una llamada</Button>
+      <Button href="/contacto/" variant="secondary" size="lg">Hablar del caso</Button>
+    </div>
+  </PageHero>
+
+  <section class="container-page py-16 md:py-24">
+    <div class="grid gap-5 md:grid-cols-3">
+      {services.map((service, index) => <ServiceCard service={service} priority={index === 0} headingLevel={2} />)}
+    </div>
+  </section>
+
+  <section class="border-y border-white/5 bg-surface/35">
+    <div class="container-page py-20 md:py-28">
+      <div class="max-w-2xl">
+        <p class="eyebrow">Cómo elegir</p>
+        <h2 class="mt-5 text-3xl font-semibold text-ink md:text-5xl">Primero, el cuello de botella.</h2>
+        <p class="mt-5 text-base leading-7 text-muted">
+          No todos los problemas necesitan la misma solución. Estas son las señales que suelen indicar por dónde
+          empezar.
+        </p>
+      </div>
+
+      <div class="mt-10 grid gap-4 md:grid-cols-3">
+        <article class="rounded-2xl border border-white/8 bg-night/45 p-6">
+          <span class="font-display text-xs uppercase tracking-[0.16em] text-amber">Si falta tiempo</span>
+          <h3 class="mt-4 font-display text-xl font-semibold text-ink">Automatización de procesos</h3>
+          <p class="mt-3 text-sm leading-6 text-muted">
+            Hay tareas repetitivas, seguimientos manuales o reportes que consumen horas. El proceso existe, pero
+            depende de que alguien se acuerde de ejecutarlo.
+          </p>
+          <a href="/servicios/automatizacion-de-procesos/" class="mt-5 inline-flex text-sm font-medium text-cyan hover:underline">
+            Ver automatización
+          </a>
+        </article>
+
+        <article class="rounded-2xl border border-white/8 bg-night/45 p-6">
+          <span class="font-display text-xs uppercase tracking-[0.16em] text-amber">Si falta atención</span>
+          <h3 class="mt-4 font-display text-xl font-semibold text-ink">Agentes de IA</h3>
+          <p class="mt-3 text-sm leading-6 text-muted">
+            Las mismas preguntas llegan una y otra vez, o el equipo pierde tiempo buscando información que ya
+            existe en documentos y conversaciones.
+          </p>
+          <a href="/servicios/chatbots-y-agentes-de-ia/" class="mt-5 inline-flex text-sm font-medium text-cyan hover:underline">
+            Ver agentes de IA
+          </a>
+        </article>
+
+        <article class="rounded-2xl border border-white/8 bg-night/45 p-6">
+          <span class="font-display text-xs uppercase tracking-[0.16em] text-amber">Si faltan datos</span>
+          <h3 class="mt-4 font-display text-xl font-semibold text-ink">Integraciones</h3>
+          <p class="mt-3 text-sm leading-6 text-muted">
+            La información se copia a mano entre herramientas o cada área trabaja con una versión distinta de la
+            verdad. El problema no es la IA: es la conexión.
+          </p>
+          <a href="/servicios/integraciones-entre-herramientas/" class="mt-5 inline-flex text-sm font-medium text-cyan hover:underline">
+            Ver integraciones
+          </a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page py-20 md:py-28">
+    <div class="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+      <div>
+        <p class="eyebrow">Proceso</p>
+        <h2 class="mt-5 text-3xl font-semibold text-ink md:text-5xl">Un camino corto y transparente.</h2>
+        <p class="mt-5 text-base leading-7 text-muted">
+          No hay cajas negras ni entregas sorpresa. Sabes en qué fase estamos y qué falta para cerrar.
+        </p>
+      </div>
+      <ol class="grid gap-4 sm:grid-cols-3">
+        {
+          steps.map((step) => (
+            <li class="rounded-2xl border border-river/25 bg-surface/60 p-5">
+              <span class="font-display text-xs font-medium tracking-[0.18em] text-amber">{step.number}</span>
+              <h3 class="mt-5 font-display text-lg font-semibold text-ink">{step.title}</h3>
+              <p class="mt-2 text-sm leading-6 text-muted">{step.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <CtaBanner
+    eyebrow="Siguiente paso"
+    title="No necesitas saber qué herramienta pedir."
+    text="Cuéntanos qué está frenando tu operación. En la primera conversación revisamos el caso y te decimos si tiene sentido automatizarlo, con qué enfoque y qué haría falta."
+  />
+</BaseLayout>

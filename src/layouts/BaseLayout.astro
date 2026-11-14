@@ -1,0 +1,62 @@
+---
+import '@fontsource-variable/inter/index.css';
+import '@fontsource-variable/space-grotesk/index.css';
+import '../styles/global.css';
+import interFont from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import spaceGroteskFont from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import SEO from '../components/SEO.astro';
+import { site } from '../data/site';
+
+type JsonLdData = Record<string, unknown>;
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  keywords?: string[];
+  jsonLd?: JsonLdData | JsonLdData[];
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  articleSection?: string;
+}
+
+const props = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0B1A1F" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" href={spaceGroteskFont} as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href={interFont} as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="alternate" type="application/rss+xml" title={`Blog de ${site.name}`} href="/rss.xml" />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+    <SEO {...props} />
+  </head>
+  <body>
+    <a
+      href="#contenido"
+      class="sr-only z-[100] rounded-full bg-amber px-5 py-3 font-medium text-night focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+    >
+      Saltar al contenido
+    </a>
+    <Header />
+    <main id="contenido">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,65 @@
+---
+import Button from '../components/Button.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+
+const links = [
+  { label: 'Inicio', href: '/', text: 'Volver a la portada y empezar de nuevo.' },
+  { label: 'Servicios', href: '/servicios/', text: 'Automatización, agentes de IA e integraciones.' },
+  { label: 'Blog', href: '/blog/', text: 'Artículos sobre procesos, IA aplicada y herramientas.' },
+  { label: 'Contacto', href: '/contacto/', text: 'Contarnos qué estabas buscando.' },
+];
+---
+
+<BaseLayout
+  title="Página no encontrada | Orinoco AI Solutions"
+  description="La página que buscas no existe o cambió de dirección. Estas son las rutas principales del sitio."
+  noindex
+>
+  <section class="container-page flex min-h-[70svh] flex-col items-center justify-center py-20 text-center md:py-28">
+    <p class="font-display text-7xl font-semibold leading-none tracking-[-0.06em] text-river md:text-9xl">404</p>
+    <p class="eyebrow mt-6">Página no encontrada</p>
+    <h1 class="mt-5 max-w-2xl text-4xl font-semibold text-ink sm:text-5xl">
+      Este cauce no lleva a ninguna parte.
+    </h1>
+    <p class="mt-5 max-w-xl text-base leading-7 text-muted">
+      La dirección que buscas no existe o cambió. No pasa nada: desde aquí puedes volver a la corriente
+      principal.
+    </p>
+
+    <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+      <Button href="/" size="lg">Volver al inicio</Button>
+      <Button href="/servicios/" variant="secondary" size="lg">Ver servicios</Button>
+    </div>
+
+    <nav class="mt-14 w-full max-w-4xl border-t border-white/5 pt-8" aria-label="Rutas principales">
+      <ul class="grid gap-3 text-left sm:grid-cols-2">
+        {
+          links.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="group flex items-start justify-between gap-4 rounded-xl border border-white/8 bg-surface/40 px-5 py-4 transition-colors hover:border-cyan/40 hover:bg-surface"
+              >
+                <span>
+                  <span class="block font-display text-base font-medium text-ink transition-colors group-hover:text-cyan">
+                    {link.label}
+                  </span>
+                  <span class="mt-1 block text-sm leading-6 text-muted">{link.text}</span>
+                </span>
+                <svg class="mt-1 h-4 w-4 shrink-0 text-cyan" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h9.5M8.5 3.5 13 8l-4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <p class="mt-8 text-xs text-muted/80">
+      ¿Crees que debería existir algo aquí? Escríbenos a
+      <a href={`mailto:${site.email}`} class="link-inline">{site.email}</a>.
+    </p>
+  </section>
+</BaseLayout>

@@ -1,0 +1,97 @@
+---
+import { site, socialLinks } from '../data/site';
+import { cal } from '../lib/cal';
+import { getServices } from '../lib/content';
+import Wordmark from './Wordmark.astro';
+
+const services = await getServices();
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-24 border-t border-white/5 bg-night">
+  <div class="container-page py-14 md:py-16">
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.1fr]">
+      <div>
+        <Wordmark />
+        <p class="mt-4 max-w-xs text-sm leading-6 text-muted">
+          Automatización e IA aplicada para negocios que quieren operar con menos fricción y más claridad.
+        </p>
+        <p class="mt-5 text-xs leading-5 text-muted/80">
+          {site.location}<br />
+          Trabajando con Latinoamérica y España.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="font-display text-xs font-medium uppercase tracking-[0.16em] text-muted">Navegación</h2>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          {
+            site.nav.map((item) => (
+              <li>
+                <a class="text-ink/85 transition-colors hover:text-cyan" href={item.href}>{item.label}</a>
+              </li>
+            ))
+          }
+          <li><a class="text-ink/85 transition-colors hover:text-cyan" href="/rss.xml">RSS</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="font-display text-xs font-medium uppercase tracking-[0.16em] text-muted">Servicios</h2>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          {
+            services.map((service) => (
+              <li>
+                <a class="text-ink/85 transition-colors hover:text-cyan" href={`/servicios/${service.id}/`}>
+                  {service.data.shortTitle}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="font-display text-xs font-medium uppercase tracking-[0.16em] text-muted">Contacto</h2>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li>
+            <a class="text-ink/85 transition-colors hover:text-cyan" href={`mailto:${site.email}`}>{site.email}</a>
+          </li>
+          <li>
+            <a
+              class="text-ink/85 transition-colors hover:text-cyan"
+              href={cal.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Agenda una llamada
+            </a>
+          </li>
+          {
+            socialLinks.map((social) => (
+              <li>
+                <a
+                  class="text-ink/85 transition-colors hover:text-cyan"
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {social.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 flex flex-col gap-4 border-t border-white/5 pt-6 text-xs text-muted/80 sm:flex-row sm:items-center sm:justify-between">
+      <p>© {year} {site.name}. Operado por {site.founder}.</p>
+      <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+        <a class="transition-colors hover:text-ink" href="/privacidad/">Privacidad</a>
+        <a class="transition-colors hover:text-ink" href="/terminos/">Términos</a>
+        <a class="transition-colors hover:text-ink" href="/contacto/">Contacto</a>
+      </div>
+    </div>
+  </div>
+</footer>

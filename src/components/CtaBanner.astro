@@ -1,0 +1,46 @@
+---
+import { cal } from '../lib/cal';
+import { site } from '../data/site';
+import Button from './Button.astro';
+
+interface Props {
+  title?: string;
+  text?: string;
+  eyebrow?: string;
+}
+
+const {
+  title = '¿Listo para que tu operación fluya?',
+  text = 'Agenda una llamada y revisemos dónde se está yendo tu tiempo. Salimos con una idea clara de qué automatizar primero.',
+  eyebrow = 'Siguiente paso',
+} = Astro.props;
+---
+
+<section class="container-page py-20 md:py-28">
+  <div class="relative overflow-hidden rounded-3xl border border-river/30 bg-surface px-6 py-12 md:px-12 md:py-16">
+    <div class="pointer-events-none absolute inset-0 opacity-60" aria-hidden="true">
+      <svg class="absolute -right-24 -top-24 h-[30rem] w-[30rem] text-river" viewBox="0 0 600 600" fill="none">
+        <circle cx="300" cy="300" r="250" stroke="currentColor" stroke-opacity="0.25" />
+        <circle cx="300" cy="300" r="190" stroke="currentColor" stroke-opacity="0.2" />
+        <circle cx="300" cy="300" r="130" stroke="currentColor" stroke-opacity="0.15" />
+        <path d="M-40 380C120 300 180 460 340 380s200-10 300-100" stroke="#4FB3C8" stroke-opacity="0.35" stroke-width="2" />
+        <path d="M-40 430C120 350 180 510 340 430s200-10 300-100" stroke="#E8A33D" stroke-opacity="0.25" stroke-width="1.5" />
+      </svg>
+    </div>
+
+    <div class="relative max-w-2xl">
+      <p class="eyebrow">{eyebrow}</p>
+      <h2 class="mt-5 text-3xl font-semibold text-ink md:text-5xl">{title}</h2>
+      <p class="mt-5 max-w-xl text-base leading-7 text-muted md:text-lg">{text}</p>
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <Button href={cal.href} size="lg">Agenda una llamada</Button>
+        <Button href={`mailto:${site.email}`} variant="secondary" size="lg" showArrow={false}>
+          Escríbenos
+        </Button>
+      </div>
+      <p class="mt-5 text-xs text-muted/80">
+        Se abrirá {cal.host} en una pestaña nueva. Sin compromiso.
+      </p>
+    </div>
+  </div>
+</section>

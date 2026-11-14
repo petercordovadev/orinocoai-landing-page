@@ -1,0 +1,23 @@
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+!.env.example
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.wrangler/
+
+# Editor y sistema
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+Thumbs.db
+Desktop.ini
+*.tsbuildinfo
+.vercel/
+.netlify/

@@ -1,0 +1,164 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Button from '../../components/Button.astro';
+import CtaBanner from '../../components/CtaBanner.astro';
+import Faq from '../../components/Faq.astro';
+import PageHero from '../../components/PageHero.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { cal } from '../../lib/cal';
+import { getServices, type Service } from '../../lib/content';
+import { faqSchema, serviceSchema } from '../../lib/jsonld';
+
+export async function getStaticPaths() {
+  const services = await getServices();
+  return services.map((service) => ({
+    params: { slug: service.id },
+    props: { service },
+  }));
+}
+
+interface Props {
+  service: Service;
+}
+
+const { service } = Astro.props;
+const { Content } = await render(service);
+const services = await getServices();
+const otherServices = services.filter((item) => item.id !== service.id);
+const serviceUrl = `/servicios/${service.id}/`;
+
+const jsonLd = [
+  serviceSchema({
+    name: service.data.title,
+    description: service.data.description,
+    url: serviceUrl,
+    image: service.data.image.src,
+  }),
+  faqSchema(service.data.faq),
+];
+---
+
+<BaseLayout
+  title={`${service.data.title} | Orinoco AI Solutions`}
+  description={service.data.description}
+  image={service.data.image.src}
+  imageAlt={service.data.imageAlt}
+  imageWidth={1200}
+  imageHeight={800}
+  keywords={[service.data.keyword, ...service.data.tools.slice(0, 4)]}
+  jsonLd={jsonLd}
+>
+  <PageHero
+    eyebrow="Servicio"
+    title={service.data.title}
+    description={service.data.description}
+    breadcrumbs={[
+      { label: 'Inicio', href: '/' },
+      { label: 'Servicios', href: '/servicios/' },
+      { label: service.data.shortTitle },
+    ]}
+  >
+    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+      <Button href={cal.href} size="lg">Agenda una llamada</Button>
+      <Button href="/contacto/" variant="secondary" size="lg">Hacer una consulta</Button>
+    </div>
+  </PageHero>
+
+  <div class="container-page py-14 md:py-20">
+    <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_19rem] lg:gap-14">
+      <article class="min-w-0">
+        <Image
+          src={service.data.image}
+          alt={service.data.imageAlt}
+          width={1200}
+          height={800}
+          format="webp"
+          loading="lazy"
+          class="h-auto w-full rounded-2xl border border-river/20"
+        />
+        <div class="prose prose-orinoco prose-base mt-10 max-w-none md:prose-lg">
+          <Content />
+        </div>
+      </article>
+
+      <aside class="lg:pt-2">
+        <div class="space-y-5 lg:sticky lg:top-24">
+          <div class="card p-6">
+            <h2 class="font-display text-sm font-medium uppercase tracking-[0.14em] text-cyan">Qué incluye</h2>
+            <ul class="mt-4 space-y-3">
+              {
+                service.data.deliverables.map((item) => (
+                  <li class="flex gap-3 text-sm leading-6 text-muted">
+                    <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber" aria-hidden="true"></span>
+                    <span>{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <div class="card p-6">
+            <h2 class="font-display text-sm font-medium uppercase tracking-[0.14em] text-cyan">Herramientas</h2>
+            <ul class="mt-4 flex flex-wrap gap-2">
+              {
+                service.data.tools.map((tool) => (
+                  <li class="rounded-full border border-river/30 bg-night/50 px-3 py-1 text-xs text-muted">
+                    {tool}
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <div class="rounded-2xl border border-amber/30 bg-amber/5 p-6">
+            <h2 class="font-display text-lg font-semibold text-ink">¿Lo vemos en una llamada?</h2>
+            <p class="mt-2 text-sm leading-6 text-muted">
+              Revisamos tu caso y te decimos si este servicio encaja o si conviene otro enfoque.
+            </p>
+            <Button href={cal.href} size="md" class="mt-5 w-full">Agenda una llamada</Button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <section class="border-y border-white/5 bg-surface/35">
+    <div class="container-page py-20 md:py-24">
+      <div class="grid gap-10 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
+        <div>
+          <p class="eyebrow">Preguntas frecuentes</p>
+          <h2 class="mt-5 text-3xl font-semibold text-ink md:text-4xl">Antes de dar el paso.</h2>
+          <p class="mt-5 text-sm leading-7 text-muted">
+            Respuestas directas sobre el alcance, los límites y la forma de trabajar.
+          </p>
+        </div>
+        <Faq items={service.data.faq} />
+      </div>
+    </div>
+  </section>
+
+  {
+    otherServices.length > 0 && (
+      <section class="container-page py-20 md:py-24">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p class="eyebrow">Otros servicios</p>
+            <h2 class="mt-4 text-3xl font-semibold text-ink">También puede encajar.</h2>
+          </div>
+          <Button href="/servicios/" variant="ghost" size="md">Ver todos</Button>
+        </div>
+        <div class="mt-8 grid gap-5 md:grid-cols-2">
+          {otherServices.map((item) => <ServiceCard service={item} />)}
+        </div>
+      </section>
+    )
+  }
+
+  <CtaBanner
+    eyebrow="Siguiente paso"
+    title="Empecemos por el proceso real."
+    text="En una conversación corta revisamos qué está pasando, qué herramientas usas y si hay una forma razonable de mejorarlo."
+  />
+</BaseLayout>

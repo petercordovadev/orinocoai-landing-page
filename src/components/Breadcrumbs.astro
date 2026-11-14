@@ -1,0 +1,44 @@
+---
+import { breadcrumbSchema } from '../lib/jsonld';
+import JsonLd from './JsonLd.astro';
+
+interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: Crumb[];
+}
+
+const { items } = Astro.props;
+const currentPath = Astro.url.pathname;
+const schemaItems = items.map((item) => ({
+  name: item.label,
+  url: item.href ?? currentPath,
+}));
+---
+
+<nav aria-label="Migas de pan" class="text-xs text-muted">
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+    {
+      items.map((item, index) => {
+        const isLast = index === items.length - 1;
+        return (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true" class="text-river">/</span>}
+            {item.href && !isLast ? (
+              <a href={item.href} class="transition-colors hover:text-cyan">{item.label}</a>
+            ) : (
+              <span aria-current={isLast ? 'page' : undefined} class={isLast ? 'text-ink/80' : ''}>
+                {item.label}
+              </span>
+            )}
+          </li>
+        );
+      })
+    }
+  </ol>
+</nav>
+
+<JsonLd data={breadcrumbSchema(schemaItems)} />

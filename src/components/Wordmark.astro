@@ -1,0 +1,19 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<a
+  href="/"
+  class:list={['group inline-flex shrink-0 items-baseline gap-1.5 whitespace-nowrap font-display leading-none', className]}
+  aria-label="Orinoco AI Solutions, ir al inicio"
+>
+  <span class="text-[1.05rem] font-bold tracking-[-0.03em] text-ink">Orinoco</span>
+  <span class="text-[1.05rem] font-medium tracking-[-0.02em] text-muted transition-colors group-hover:text-cyan">
+    AI Solutions
+  </span>
+  <span class="mb-1 h-1.5 w-1.5 rounded-full bg-amber" aria-hidden="true"></span>
+</a>

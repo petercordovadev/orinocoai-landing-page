@@ -1,0 +1,119 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { site } from '../data/site';
+---
+
+<LegalLayout
+  title="Términos de uso"
+  description="Condiciones de uso del sitio de Orinoco AI Solutions, alcance de la información publicada y responsabilidades."
+  updated="2 de noviembre de 2026"
+  breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Términos' }]}
+>
+  <p>
+    Estos términos regulan el uso del sitio <strong>{site.url.replace('https://', '')}</strong> y la relación
+    informativa que se establece cuando lo consultas o utilizas sus formularios. Al navegar por el sitio aceptas
+    estas condiciones.
+  </p>
+
+  <h2>1. Titular del sitio</h2>
+  <p>
+    El sitio es operado por <strong>Orinoco AI Solutions</strong>, bajo la dirección de
+    <strong>{site.founder}</strong>, desde {site.location}. Para cualquier comunicación, el canal de contacto es
+    <a href={`mailto:${site.email}`}>{site.email}</a>.
+  </p>
+
+  <h2>2. Objeto y carácter informativo</h2>
+  <p>
+    El sitio presenta servicios de automatización, agentes de IA e integraciones entre herramientas, además de
+    contenidos sobre estos temas. La información publicada tiene carácter general e informativo y no constituye
+    una oferta vinculante, una garantía de resultados ni asesoramiento técnico, legal o financiero.
+  </p>
+  <p>
+    El alcance, el precio, los plazos y las condiciones de cada servicio se definen en una propuesta o contrato
+    independiente. Ninguna conversación, mensaje o publicación del sitio crea por sí sola una relación
+    profesional.
+  </p>
+
+  <h2>3. Uso permitido</h2>
+  <p>Al utilizar el sitio te comprometes a:</p>
+  <ul>
+    <li>No utilizarlo para fines ilícitos, fraudulentos o contrarios a la buena fe.</li>
+    <li>No intentar acceder a sistemas, cuentas o datos sin autorización.</li>
+    <li>No interferir en el funcionamiento del sitio ni introducir código malicioso.</li>
+    <li>No enviar spam, contenido difamatorio o material que vulnere derechos de terceros.</li>
+    <li>No suplantar la identidad de otra persona o empresa.</li>
+  </ul>
+  <p>
+    Nos reservamos el derecho de rechazar o eliminar comunicaciones que incumplan estas condiciones y de
+    restringir el acceso cuando sea necesario para proteger el servicio.
+  </p>
+
+  <h2>4. Propiedad intelectual</h2>
+  <p>
+    Los textos, ilustraciones, marcas, diseño, estructura y demás contenidos de este sitio pertenecen a Orinoco
+    AI Solutions o se utilizan con autorización. Puedes consultarlos y compartir enlaces al sitio, pero no
+    reproducirlos, modificarlos, distribuirlos ni utilizarlos con fines comerciales sin autorización previa por
+    escrito.
+  </p>
+  <p>
+    Los nombres y marcas de herramientas de terceros que aparecen en el sitio (por ejemplo, n8n, Make, Zapier,
+    OpenAI, Anthropic, Cal.com o Cloudflare) pertenecen a sus respectivos titulares y se mencionan únicamente con
+    fines descriptivos. Su mención no implica patrocinio ni afiliación.
+  </p>
+
+  <h2>5. Servicios y resultados</h2>
+  <p>
+    La automatización y la IA pueden reducir trabajo manual y mejorar la disponibilidad de información, pero no
+    garantizan un resultado empresarial concreto. Los resultados dependen de la calidad de los datos, de la
+    implicación del equipo, de las herramientas utilizadas y de factores externos.
+  </p>
+  <p>
+    El cliente es responsable de facilitar accesos lícitos, de revisar la configuración antes de usarla en
+    producción y de mantener las medidas de seguridad de sus propios sistemas. Cualquier agente de IA debe
+    operar con supervisión humana en las decisiones que requieran criterio o responsabilidad legal.
+  </p>
+
+  <h2>6. Enlaces externos</h2>
+  <p>
+    El sitio puede incluir enlaces a plataformas de terceros, como la agenda de Cal.com o redes sociales. No
+    controlamos esos sitios ni sus contenidos, políticas o disponibilidad. El acceso a ellos es responsabilidad
+    de quien lo realiza y se rige por sus propios términos.
+  </p>
+
+  <h2>7. Protección de datos</h2>
+  <p>
+    El tratamiento de datos personales se describe en la
+    <a href="/privacidad/">política de privacidad</a>. Al enviar el formulario o reservar una llamada, aceptas
+    las condiciones de tratamiento allí indicadas.
+  </p>
+
+  <h2>8. Disponibilidad y limitación de responsabilidad</h2>
+  <p>
+    Procuramos que el sitio esté disponible y actualizado, pero no garantizamos que funcione sin interrupciones
+    ni que esté libre de errores. Podemos modificar, suspender o retirar contenidos en cualquier momento.
+  </p>
+  <p>
+    En la medida permitida por la ley, no seremos responsables de daños indirectos, pérdida de beneficios,
+    pérdida de datos o perjuicios derivados del uso del sitio, de la confianza en su contenido o de la
+    imposibilidad de acceder a él. Nada en estos términos limita los derechos que la legislación aplicable
+    reconozca a los consumidores.
+  </p>
+
+  <h2>9. Cambios en los términos</h2>
+  <p>
+    Podemos actualizar estos términos para reflejar cambios en el sitio o en la normativa. La versión vigente es
+    la publicada en esta página, con la fecha de actualización indicada al inicio. El uso continuado del sitio
+    después de un cambio implica la aceptación de la nueva versión.
+  </p>
+
+  <h2>10. Legislación aplicable y contacto</h2>
+  <p>
+    Estas condiciones se interpretan conforme a la legislación que resulte aplicable en la jurisdicción del
+    responsable. Cualquier controversia se abordará primero de buena fe y, si no se resuelve, ante los tribunales
+    competentes.
+  </p>
+  <p>
+    Para cualquier duda sobre estos términos, escribe a
+    <a href={`mailto:${site.email}`}>{site.email}</a>.
+  </p>
+</LegalLayout>

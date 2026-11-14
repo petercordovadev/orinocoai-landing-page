@@ -1,0 +1,339 @@
+---
+import { Image } from 'astro:assets';
+import heroImage from '../assets/hero/hero-orinoco.webp';
+import BlogCard from '../components/BlogCard.astro';
+import Button from '../components/Button.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import Faq from '../components/Faq.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { cal } from '../lib/cal';
+import { getPublishedPosts, getServices } from '../lib/content';
+import { faqSchema } from '../lib/jsonld';
+
+const services = await getServices();
+const posts = (await getPublishedPosts()).slice(0, 3);
+
+const faqs = [
+  {
+    question: '¿Qué significa “IA aplicada” en Orinoco AI Solutions?',
+    answer:
+      'Significa usar IA para resolver un problema concreto del negocio, no para añadir una capa de moda. Puede ser un agente que responde consultas, una automatización que clasifica solicitudes o un asistente interno que encuentra información. Siempre con límites, supervisión y una forma de medir si aporta valor.',
+  },
+  {
+    question: '¿Qué procesos se pueden automatizar?',
+    answer:
+      'Tareas repetitivas y basadas en reglas: registrar datos, mover información entre herramientas, enviar recordatorios, generar reportes, clasificar solicitudes o preparar documentos. En el diagnóstico identificamos cuáles tienen más impacto y cuáles conviene dejar en manos de una persona.',
+  },
+  {
+    question: '¿Necesito cambiar todas mis herramientas?',
+    answer:
+      'No. Partimos de lo que ya usas y revisamos qué se puede conectar mediante API, webhooks o integraciones existentes. Solo proponemos un cambio cuando la herramienta actual impide resolver el problema de forma razonable.',
+  },
+  {
+    question: '¿La IA va a reemplazar a mi equipo?',
+    answer:
+      'La IA puede absorber tareas repetitivas y dar mejor contexto a tu equipo, pero no sustituye el criterio humano. Diseñamos los flujos para que las decisiones importantes sigan teniendo un responsable y para que las excepciones escalen a una persona.',
+  },
+  {
+    question: '¿Cuánto tarda una implementación?',
+    answer:
+      'Depende del alcance, de las herramientas implicadas y de la calidad de los datos. Un flujo acotado puede resolverse en pocas semanas; un proceso con varias áreas requiere más diagnóstico y pruebas. El rango se define después de entender el caso, sin prometer plazos antes de saber qué hay que construir.',
+  },
+  {
+    question: '¿Trabajan con negocios de Latinoamérica y España?',
+    answer:
+      'Sí. Orinoco AI Solutions nace en Ciudad Bolívar, Venezuela, y trabaja de forma remota con negocios de Latinoamérica y España. Las reuniones y la documentación se hacen en español.',
+  },
+];
+
+const homeJsonLd = faqSchema(faqs);
+
+const problems = [
+  {
+    title: 'Tareas que se repiten',
+    text: 'Tu equipo dedica horas a copiar datos, enviar recordatorios y armar reportes que podrían ocurrir solos.',
+    icon: 'repeat',
+  },
+  {
+    title: 'Datos en silos',
+    text: 'La información vive en herramientas que no se hablan. Cada consulta obliga a abrir tres pestañas y reconstruir el contexto.',
+    icon: 'nodes',
+  },
+  {
+    title: 'Decisiones sin contexto',
+    text: 'Cuando los datos llegan tarde o incompletos, se decide con intuición. La operación avanza, pero no aprende.',
+    icon: 'compass',
+  },
+];
+
+const steps = [
+  {
+    number: '01',
+    title: 'Diagnóstico',
+    text: 'Entendemos cómo funciona tu operación hoy, qué herramientas usas y dónde se pierde tiempo. Priorizamos por impacto real, no por tendencia.',
+  },
+  {
+    number: '02',
+    title: 'Implementación',
+    text: 'Diseñamos y construimos el flujo, el agente o la integración. Probamos con casos reales, definimos errores y dejamos todo documentado.',
+  },
+  {
+    number: '03',
+    title: 'Soporte',
+    text: 'Acompañamos la puesta en marcha, revisamos que funcione y ajustamos lo necesario. La automatización se mantiene, no se abandona.',
+  },
+];
+---
+
+<BaseLayout
+  title="Automatización e IA aplicada para negocios | Orinoco AI Solutions"
+  description="Automatización e IA aplicada para negocios: diseñamos procesos, agentes e integraciones que reducen el trabajo manual y ordenan tu operación."
+  keywords={[
+    'automatización de procesos',
+    'IA aplicada a negocios',
+    'agentes de IA',
+    'integrar herramientas',
+    'automatización para pymes',
+    'Orinoco AI Solutions',
+  ]}
+  jsonLd={homeJsonLd}
+>
+  <section class="relative overflow-hidden">
+    <div class="container-page grid items-center gap-12 pb-16 pt-12 md:gap-16 md:pb-24 md:pt-20 lg:grid-cols-[1.08fr_0.92fr]">
+      <div>
+        <p class="eyebrow">Automatización e IA aplicada · Latinoamérica y España</p>
+        <h1 class="mt-6 max-w-3xl text-5xl font-semibold leading-[1.02] text-ink sm:text-6xl lg:text-7xl">
+          Menos trabajo manual. <span class="text-cyan">Más tiempo</span> para hacer crecer tu negocio.
+        </h1>
+        <p class="mt-7 max-w-xl text-base leading-7 text-muted md:text-lg md:leading-8">
+          Diseño e implemento automatizaciones y agentes de IA que conectan tus herramientas, ordenan tu
+          operación y te devuelven claridad para decidir.
+        </p>
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Button href={cal.href} size="lg">Agenda una llamada</Button>
+          <Button href="/servicios/" variant="secondary" size="lg">Ver servicios</Button>
+        </div>
+        <p class="mt-6 flex items-center gap-2 text-xs text-muted/85">
+          <span class="h-1.5 w-1.5 rounded-full bg-river" aria-hidden="true"></span>
+          Primera conversación para revisar tu operación. Sin compromiso.
+        </p>
+      </div>
+
+      <div class="relative mx-auto w-full max-w-lg lg:max-w-none">
+        <div class="absolute -inset-8 -z-10 rounded-full bg-river/10 blur-3xl" aria-hidden="true"></div>
+        <div class="relative overflow-hidden rounded-[2rem] border border-river/30 bg-surface p-2 shadow-glow">
+          <Image
+            src={heroImage}
+            alt="Ilustración abstracta de líneas de río que representan procesos, datos y decisiones conectadas."
+            width={760}
+            height={760}
+            format="webp"
+            loading="eager"
+            fetchpriority="high"
+            class="h-auto w-full rounded-[1.6rem] object-cover"
+          />
+          <div class="absolute inset-x-5 bottom-5 rounded-2xl border border-white/10 bg-night/85 p-4 backdrop-blur-md">
+            <div class="grid grid-cols-3 gap-2 text-center">
+              <div>
+                <span class="block font-display text-xs font-medium text-cyan">Procesos</span>
+                <span class="mt-1 block text-[0.65rem] uppercase tracking-[0.12em] text-muted/80">orden</span>
+              </div>
+              <div class="border-x border-white/10">
+                <span class="block font-display text-xs font-medium text-cyan">Datos</span>
+                <span class="mt-1 block text-[0.65rem] uppercase tracking-[0.12em] text-muted/80">conexión</span>
+              </div>
+              <div>
+                <span class="block font-display text-xs font-medium text-cyan">Decisiones</span>
+                <span class="mt-1 block text-[0.65rem] uppercase tracking-[0.12em] text-muted/80">claridad</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-y border-white/5 bg-surface/35">
+    <div class="container-page py-20 md:py-28">
+      <div class="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+        <div>
+          <p class="eyebrow">El punto de partida</p>
+          <h2 class="mt-5 max-w-xl text-3xl font-semibold text-ink md:text-5xl">
+            La IA no arregla un proceso desordenado.
+          </h2>
+          <p class="mt-5 max-w-md text-base leading-7 text-muted">
+            Automatizar sin entender la operación solo acelera el caos. Por eso empezamos por el proceso, las
+            personas y los datos; después elegimos la tecnología.
+          </p>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-3">
+          {
+            problems.map((problem) => (
+              <article class="card p-5">
+                <span class="flex h-10 w-10 items-center justify-center rounded-xl border border-river/35 bg-river/10 text-cyan">
+                  {problem.icon === 'repeat' && (
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                      <path d="M4 7a6 6 0 0 1 10.5-2M16 13A6 6 0 0 1 5.5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                      <path d="M14 2v3h-3M6 18v-3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  )}
+                  {problem.icon === 'nodes' && (
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                      <circle cx="4" cy="5" r="1.8" stroke="currentColor" stroke-width="1.3" />
+                      <circle cx="16" cy="6" r="1.8" stroke="currentColor" stroke-width="1.3" />
+                      <circle cx="10" cy="16" r="1.8" stroke="currentColor" stroke-width="1.3" />
+                      <path d="m5.6 6.1 8.6-.1M5.2 6.6l3.9 7.6M14.9 7.5l-3.7 7" stroke="currentColor" stroke-width="1.3" />
+                    </svg>
+                  )}
+                  {problem.icon === 'compass' && (
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                      <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.4" />
+                      <path d="m12.8 7.2-1.6 4-4 1.6 1.6-4 4-1.6Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" />
+                    </svg>
+                  )}
+                </span>
+                <h3 class="mt-5 font-display text-base font-semibold text-ink">{problem.title}</h3>
+                <p class="mt-2 text-sm leading-6 text-muted">{problem.text}</p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page py-20 md:py-28">
+    <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+      <div class="max-w-2xl">
+        <p class="eyebrow">Servicios</p>
+        <h2 class="mt-5 text-3xl font-semibold text-ink md:text-5xl">Tres formas de destrabar tu operación.</h2>
+        <p class="mt-5 max-w-xl text-base leading-7 text-muted">
+          No vendemos una herramienta única. Diseñamos la combinación que resuelve el cuello de botella real de
+          tu negocio.
+        </p>
+      </div>
+      <Button href="/servicios/" variant="ghost" size="md">Ver todos los servicios</Button>
+    </div>
+
+    <div class="mt-10 grid gap-5 md:grid-cols-3">
+      {services.map((service, index) => <ServiceCard service={service} priority={index === 0} />)}
+    </div>
+  </section>
+
+  <section class="border-y border-white/5 bg-surface/35">
+    <div class="container-page py-20 md:py-28">
+      <div class="max-w-2xl">
+        <p class="eyebrow">Cómo trabajamos</p>
+        <h2 class="mt-5 text-3xl font-semibold text-ink md:text-5xl">De la fricción al flujo, en tres pasos.</h2>
+        <p class="mt-5 text-base leading-7 text-muted">
+          Un proceso corto y transparente. Sabes qué estamos haciendo, por qué y qué queda documentado al final.
+        </p>
+      </div>
+
+      <ol class="mt-12 grid gap-5 md:grid-cols-3">
+        {
+          steps.map((step) => (
+            <li class="relative rounded-2xl border border-river/25 bg-night/45 p-6">
+              <span class="font-display text-sm font-medium tracking-[0.18em] text-amber">{step.number}</span>
+              <h3 class="mt-6 font-display text-xl font-semibold text-ink">{step.title}</h3>
+              <p class="mt-3 text-sm leading-6 text-muted">{step.text}</p>
+              <span class="absolute right-6 top-6 h-2 w-2 rounded-full bg-river" aria-hidden="true"></span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="container-page py-20 md:py-28">
+    <div class="grid items-stretch gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+      <div class="relative flex min-h-[24rem] flex-col justify-between overflow-hidden rounded-3xl border border-river/30 bg-surface p-7 md:p-9">
+        <svg class="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 600 600" fill="none" aria-hidden="true">
+          <path d="M-70 430C70 360 120 500 250 420s210-40 430-190" stroke="#1E7F6B" stroke-opacity="0.5" stroke-width="2" />
+          <path d="M-70 470C70 400 120 540 250 460s210-40 430-190" stroke="#4FB3C8" stroke-opacity="0.35" stroke-width="1.5" />
+          <path d="M-70 510C70 440 120 580 250 500s210-40 430-190" stroke="#E8A33D" stroke-opacity="0.3" stroke-width="1.5" />
+          <circle cx="470" cy="140" r="110" stroke="#1E7F6B" stroke-opacity="0.25" />
+          <circle cx="470" cy="140" r="160" stroke="#1E7F6B" stroke-opacity="0.18" />
+        </svg>
+        <div class="relative">
+          <p class="eyebrow">Origen</p>
+          <p class="mt-8 font-display text-6xl font-semibold tracking-[-0.06em] text-ink md:text-7xl">Orinoco</p>
+          <p class="mt-2 max-w-xs text-sm leading-6 text-muted">
+            Un río que conecta, distribuye y da vida a todo lo que toca. La metáfora de una operación que fluye.
+          </p>
+        </div>
+        <div class="relative mt-12 flex flex-wrap items-end justify-between gap-4 border-t border-white/10 pt-5 text-xs text-muted">
+          <span>Ciudad Bolívar, Venezuela</span>
+          <span class="font-display tracking-[0.12em] text-cyan">8.12° N · 63.55° O</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col justify-center rounded-3xl border border-white/5 bg-night/40 p-7 md:p-10">
+        <p class="eyebrow">El nombre</p>
+        <h2 class="mt-5 text-3xl font-semibold text-ink md:text-4xl">Un río, no una tubería.</h2>
+        <div class="mt-5 space-y-4 text-base leading-7 text-muted">
+          <p>
+            Orinoco AI Solutions nace en Ciudad Bolívar, a orillas del río Orinoco. El nombre no es solo un guiño
+            geográfico: es una forma de entender la operación de un negocio.
+          </p>
+          <p>
+            Un río no funciona por partes aisladas. Conecta afluentes, distribuye caudal y encuentra su cauce.
+            Cuando las herramientas, los datos y las personas están conectados, el trabajo fluye. Cuando no, se
+            estanca.
+          </p>
+          <p>
+            Por eso no empezamos instalando IA. Empezamos entendiendo qué se está estancando y qué necesita
+            moverse para que el negocio avance.
+          </p>
+        </div>
+        <div class="mt-8">
+          <Button href="/sobre-orinoco/" variant="ghost" size="md">Conoce Orinoco</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {
+    posts.length > 0 && (
+      <section class="border-y border-white/5 bg-surface/35">
+        <div class="container-page py-20 md:py-28">
+          <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <div class="max-w-2xl">
+              <p class="eyebrow">Blog</p>
+              <h2 class="mt-5 text-3xl font-semibold text-ink md:text-5xl">Ideas para una operación más simple.</h2>
+              <p class="mt-5 text-base leading-7 text-muted">
+                Artículos sobre automatización, IA aplicada e integraciones, escritos para decidir mejor, no para
+                repetir titulares.
+              </p>
+            </div>
+            <Button href="/blog/" variant="ghost" size="md">Ver todos los artículos</Button>
+          </div>
+          <div class="mt-10 grid gap-5 md:grid-cols-3">
+            {posts.map((post) => <BlogCard post={post} />)}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="container-page py-20 md:py-28">
+    <div class="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+      <div>
+        <p class="eyebrow">Preguntas frecuentes</p>
+        <h2 class="mt-5 text-3xl font-semibold text-ink md:text-5xl">Lo que suele preguntarse antes de empezar.</h2>
+        <p class="mt-5 max-w-sm text-base leading-7 text-muted">
+          Si tu duda no está aquí, escríbenos. Respondemos con claridad, aunque la respuesta sea “todavía no es el
+          momento”.
+        </p>
+        <div class="mt-7">
+          <Button href="/contacto/" variant="secondary" size="md" showArrow={false}>Hacer una pregunta</Button>
+        </div>
+      </div>
+      <Faq items={faqs} />
+    </div>
+  </section>
+
+  <CtaBanner />
+</BaseLayout>

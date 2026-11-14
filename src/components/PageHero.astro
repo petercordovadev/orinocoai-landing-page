@@ -1,0 +1,30 @@
+---
+import Breadcrumbs from './Breadcrumbs.astro';
+
+interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  description: string;
+  breadcrumbs?: Crumb[];
+  align?: 'left' | 'center';
+}
+
+const { eyebrow, title, description, breadcrumbs = [], align = 'left' } = Astro.props;
+---
+
+<section class="border-b border-white/5">
+  <div class="container-page pb-14 pt-10 md:pb-20 md:pt-14">
+    {breadcrumbs.length > 0 && <Breadcrumbs items={breadcrumbs} />}
+    <div class:list={['mt-10 max-w-3xl', align === 'center' && 'mx-auto text-center']}>
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1 class="mt-5 text-4xl font-semibold text-ink sm:text-5xl md:text-6xl">{title}</h1>
+      <p class="mt-5 max-w-2xl text-base leading-7 text-muted md:text-lg">{description}</p>
+      <slot />
+    </div>
+  </div>
+</section>

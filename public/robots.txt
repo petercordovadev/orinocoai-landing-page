@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Las páginas de confirmación y error no deben aparecer en buscadores.
+# Se marcan además con noindex en el HTML.
+
+Sitemap: https://orinocoaisolutions.com/sitemap-index.xml

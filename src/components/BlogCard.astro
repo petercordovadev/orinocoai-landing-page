@@ -1,0 +1,55 @@
+---
+import { Image } from 'astro:assets';
+import type { BlogPost } from '../lib/content';
+import { formatDate, readingTime } from '../lib/format';
+
+interface Props {
+  post: BlogPost;
+  featured?: boolean;
+  headingLevel?: 2 | 3;
+}
+
+const { post, featured = false, headingLevel = 3 } = Astro.props;
+const Heading = headingLevel === 2 ? 'h2' : 'h3';
+const postUrl = `/blog/${post.id}/`;
+---
+
+<article class:list={['card card-interactive group overflow-hidden', featured && 'md:grid md:grid-cols-2']}>
+  <a href={postUrl} class="flex h-full flex-col" aria-label={`Leer artículo: ${post.data.title}`}>
+    <div class:list={['relative overflow-hidden border-b border-white/5', featured && 'md:border-b-0 md:border-r']}>
+      <Image
+        src={post.data.image}
+        alt={post.data.imageAlt ?? post.data.title}
+        width={featured ? 960 : 720}
+        height={featured ? 504 : 378}
+        format="webp"
+        loading={featured ? 'eager' : 'lazy'}
+        class:list={[
+          'w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]',
+          featured ? 'h-56 md:h-full' : 'h-44',
+        ]}
+      />
+    </div>
+    <div class:list={['flex flex-1 flex-col p-6', featured && 'md:justify-center md:p-8']}>
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted">
+        <span class="font-display uppercase tracking-[0.14em] text-cyan">{post.data.category}</span>
+        <span aria-hidden="true" class="text-river">·</span>
+        <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+        <span aria-hidden="true" class="text-river">·</span>
+        <span>{readingTime(post.body ?? '')} min de lectura</span>
+      </div>
+      <Heading class:list={['mt-3 font-display font-semibold text-ink transition-colors group-hover:text-cyan', featured ? 'text-2xl leading-tight md:text-3xl' : 'text-lg leading-snug']}>
+        {post.data.title}
+      </Heading>
+      <p class:list={['mt-3 text-sm leading-6 text-muted', featured ? 'line-clamp-3' : 'line-clamp-3']}>
+        {post.data.description}
+      </p>
+      <span class="mt-5 inline-flex items-center gap-2 text-sm font-medium text-cyan">
+        Leer artículo
+        <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M3 8h9.5M8.5 3.5 13 8l-4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+    </div>
+  </a>
+</article>

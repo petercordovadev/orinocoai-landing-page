@@ -1,0 +1,252 @@
+---
+import { Image } from 'astro:assets';
+import heroImage from '../assets/hero/hero-orinoco.webp';
+import Button from '../components/Button.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import PageHero from '../components/PageHero.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site, socialLinks } from '../data/site';
+import { cal } from '../lib/cal';
+import { absoluteUrl, organizationId } from '../lib/jsonld';
+
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.founder,
+  url: absoluteUrl('/sobre-orinoco/'),
+  jobTitle: 'Fundador',
+  worksFor: { '@id': organizationId },
+  sameAs: socialLinks.map((social) => social.url),
+};
+
+const principles = [
+  {
+    title: 'Primero el proceso',
+    text: 'Antes de hablar de modelos o herramientas, entendemos cómo funciona tu operación. Si el proceso no está claro, la tecnología solo lo hará más rápido.',
+  },
+  {
+    title: 'Menos humo',
+    text: 'No prometemos resultados que no podemos medir ni capacidades que no podemos sostener. Preferimos un alcance pequeño que funcione a una demo impresionante que no aguante el uso real.',
+  },
+  {
+    title: 'Límites claros',
+    text: 'Cada automatización y cada agente tiene reglas, responsables y rutas de escalado. La IA no decide sola lo que requiere criterio humano.',
+  },
+  {
+    title: 'Documentación y traspaso',
+    text: 'Lo que construimos queda documentado y operable por tu equipo. No queremos que dependas de nosotros para cada cambio menor.',
+  },
+];
+
+const timeline = [
+  {
+    label: 'Observar',
+    text: 'Revisamos el proceso actual, las herramientas y los datos. Identificamos dónde se pierde tiempo y qué decisiones necesitan contexto.',
+  },
+  {
+    label: 'Simplificar',
+    text: 'Antes de automatizar, quitamos pasos que no aportan. Un flujo más simple es más fácil de mantener y de entender.',
+  },
+  {
+    label: 'Construir',
+    text: 'Implementamos la automatización, el agente o la integración con pruebas, manejo de errores y alertas.',
+  },
+  {
+    label: 'Acompañar',
+    text: 'Medimos lo que ocurre, ajustamos y dejamos una guía para que tu equipo pueda seguir operando el sistema.',
+  },
+];
+---
+
+<BaseLayout
+  title="Sobre Orinoco AI Solutions | Automatización e IA desde Ciudad Bolívar"
+  description="Orinoco AI Solutions es un estudio de automatización e IA aplicada operado por Peter Córdova. Trabajamos con negocios de Latinoamérica y España."
+  keywords={['Orinoco AI Solutions', 'Peter Córdova', 'automatización Venezuela', 'IA aplicada Latinoamérica']}
+  jsonLd={personJsonLd}
+>
+  <PageHero
+    eyebrow="Sobre Orinoco"
+    title="Un río que conecta. Una operación que fluye."
+    description="Orinoco AI Solutions nace en Ciudad Bolívar, Venezuela, con una idea simple: la tecnología debe ordenar el trabajo, no añadir otra capa de ruido."
+    breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Sobre Orinoco' }]}
+  >
+    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+      <Button href={cal.href} size="lg">Agenda una llamada</Button>
+      <Button href="/contacto/" variant="secondary" size="lg">Hacer una consulta</Button>
+    </div>
+  </PageHero>
+
+  <section class="container-page overflow-hidden py-16 md:py-24">
+    <div class="grid items-center gap-10 lg:grid-cols-[1fr_0.9fr] lg:gap-16">
+      <div>
+        <p class="eyebrow">El nombre</p>
+        <h2 class="mt-5 text-3xl font-semibold text-ink md:text-5xl">No es una tubería. Es un cauce.</h2>
+        <div class="mt-6 space-y-4 text-base leading-7 text-muted">
+          <p>
+            El Orinoco conecta afluentes, distribuye caudal y da vida a lo que toca. No funciona por partes
+            aisladas: todo lo que entra forma parte de un mismo sistema. Es una buena forma de pensar la
+            operación de un negocio.
+          </p>
+          <p>
+            Cuando las herramientas, los datos y las personas están conectados, el trabajo fluye. Cuando cada
+            área guarda su propia versión de la verdad, la operación se estanca: seguimientos que se olvidan,
+            reportes que llegan tarde, decisiones tomadas a ciegas.
+          </p>
+          <p>
+            Por eso no empezamos instalando IA. Empezamos entendiendo qué se está estancando y qué necesita
+            moverse para que el negocio avance.
+          </p>
+        </div>
+      </div>
+
+      <div class="relative mx-auto w-full max-w-lg lg:max-w-none">
+        <div class="absolute -inset-6 -z-10 rounded-full bg-river/10 blur-3xl" aria-hidden="true"></div>
+        <div class="overflow-hidden rounded-[2rem] border border-river/30 bg-surface p-2 shadow-glow">
+          <Image
+            src={heroImage}
+            alt="Ilustración abstracta de líneas de río que representan procesos, datos y decisiones conectadas."
+            width={720}
+            height={720}
+            format="webp"
+            loading="lazy"
+            class="h-auto w-full rounded-[1.6rem] object-cover"
+          />
+        </div>
+        <p class="mt-4 text-center font-display text-xs uppercase tracking-[0.18em] text-muted">
+          Ciudad Bolívar · 8.12° N · 63.55° O
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-y border-white/5 bg-surface/35">
+    <div class="container-page py-20 md:py-28">
+      <div class="max-w-2xl">
+        <p class="eyebrow">Cómo pensamos</p>
+        <h2 class="mt-5 text-3xl font-semibold text-ink md:text-5xl">Cuatro principios que no negociamos.</h2>
+        <p class="mt-5 text-base leading-7 text-muted">
+          No son valores de pared. Son las reglas con las que decidimos qué construir, qué no construir y cómo
+          entregarlo.
+        </p>
+      </div>
+
+      <div class="mt-10 grid gap-4 sm:grid-cols-2">
+        {
+          principles.map((principle, index) => (
+            <article class="card p-6 md:p-7">
+              <span class="font-display text-xs font-medium tracking-[0.18em] text-amber">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <h3 class="mt-4 font-display text-xl font-semibold text-ink">{principle.title}</h3>
+              <p class="mt-3 text-sm leading-6 text-muted">{principle.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page py-20 md:py-28">
+    <div class="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+      <div>
+        <p class="eyebrow">Forma de trabajar</p>
+        <h2 class="mt-5 text-3xl font-semibold text-ink md:text-5xl">Un proceso sin cajas negras.</h2>
+        <p class="mt-5 text-base leading-7 text-muted">
+          Cada fase termina con algo concreto: un mapa, un flujo funcionando o una guía para operarlo. Sabes en
+          qué punto estamos y qué falta.
+        </p>
+      </div>
+
+      <ol class="relative space-y-4 border-l border-river/30 pl-6">
+        {
+          timeline.map((step, index) => (
+            <li class="relative">
+              <span
+                class="absolute -left-[1.95rem] top-1 flex h-4 w-4 items-center justify-center rounded-full border border-river/50 bg-night"
+                aria-hidden="true"
+              >
+                <span class="h-1.5 w-1.5 rounded-full bg-amber" />
+              </span>
+              <div class="rounded-2xl border border-white/5 bg-night/40 p-5">
+                <span class="font-display text-xs uppercase tracking-[0.16em] text-cyan">
+                  {String(index + 1).padStart(2, '0')} · {step.label}
+                </span>
+                <p class="mt-3 text-sm leading-6 text-muted">{step.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="border-y border-white/5 bg-surface/35">
+    <div class="container-page py-20 md:py-28">
+      <div class="grid gap-8 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-14">
+        <div class="relative overflow-hidden rounded-3xl border border-river/25 bg-night/50 p-7 md:p-9">
+          <svg class="pointer-events-none absolute inset-0 h-full w-full" viewBox="0 0 600 600" fill="none" aria-hidden="true">
+            <path d="M-60 410C80 340 130 480 260 400s200-40 420-180" stroke="#1E7F6B" stroke-opacity="0.45" stroke-width="2" />
+            <path d="M-60 450C80 380 130 520 260 440s200-40 420-180" stroke="#4FB3C8" stroke-opacity="0.3" stroke-width="1.5" />
+            <path d="M-60 490C80 420 130 560 260 480s200-40 420-180" stroke="#E8A33D" stroke-opacity="0.25" stroke-width="1.5" />
+          </svg>
+          <div class="relative">
+            <span class="flex h-14 w-14 items-center justify-center rounded-2xl border border-river/35 bg-river/10 font-display text-lg font-semibold text-cyan">
+              PC
+            </span>
+            <p class="mt-6 font-display text-2xl font-semibold text-ink">{site.founder}</p>
+            <p class="mt-1 text-sm text-cyan">Fundador · Orinoco AI Solutions</p>
+            <p class="mt-4 max-w-sm text-sm leading-6 text-muted">
+              Fundador de Orinoco AI Solutions. Trabajo con negocios que necesitan ordenar su
+              operación antes de sumar más herramientas o más IA.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              {
+                socialLinks.map((social) => (
+                  <a
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-ink/85 transition-colors hover:text-cyan"
+                  >
+                    {social.name}
+                  </a>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p class="eyebrow">Detrás del nombre</p>
+          <h2 class="mt-5 text-3xl font-semibold text-ink md:text-4xl">Un equipo pequeño, con acceso directo.</h2>
+          <div class="mt-5 space-y-4 text-base leading-7 text-muted">
+            <p>
+              Orinoco AI Solutions es un estudio pequeño. Eso significa que la persona con la que hablas es la
+              misma que diseña e implementa la solución. No hay una capa de ventas que promete algo que luego
+              otro equipo tiene que resolver.
+            </p>
+            <p>
+              También significa que elegimos los proyectos con cuidado. Si un caso no encaja con lo que hacemos
+              bien, lo decimos. Si una solución más simple resuelve el problema, la proponemos aunque implique
+              menos trabajo para nosotros.
+            </p>
+            <p>
+              Trabajamos en español con negocios de Latinoamérica y España, de forma remota. La cercanía no
+              depende de la geografía: depende de responder, documentar y cumplir lo acordado.
+            </p>
+          </div>
+          <div class="mt-7 flex flex-wrap gap-3">
+            <Button href="/servicios/" variant="secondary" size="md">Ver servicios</Button>
+            <Button href="/contacto/" variant="ghost" size="md">Escríbenos</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBanner
+    eyebrow="Hablemos"
+    title="Si tu operación se estancó, empecemos por ahí."
+    text="Una conversación corta para entender qué está pasando y si tiene sentido automatizarlo. Sin presentación de ventas ni compromiso."
+  />
+</BaseLayout>
