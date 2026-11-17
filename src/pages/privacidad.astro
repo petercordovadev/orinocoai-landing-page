@@ -6,7 +6,7 @@ import { site } from '../data/site';
 <LegalLayout
   title="Política de privacidad"
   description="Cómo trata Orinoco AI Solutions los datos personales que recibe a través del sitio web, el formulario de contacto y la agenda de llamadas."
-  updated="2 de noviembre de 2026"
+  updated="17 de noviembre de 2026"
   breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Privacidad' }]}
 >
   <p>
@@ -29,15 +29,22 @@ import { site } from '../data/site';
 
   <h2>2. Qué datos recogemos</h2>
   <h3>Formulario de contacto</h3>
-  <p>Cuando envías el formulario, se recogen los siguientes datos:</p>
+  <p>
+    El formulario envía tus datos de forma cifrada a la API del propio sitio (<code>/api/contacto</code>). Cuando lo
+    envías, se recogen los siguientes datos:
+  </p>
   <ul>
     <li>Nombre.</li>
     <li>Correo electrónico.</li>
     <li>Nombre de la empresa, si decides indicarlo (opcional).</li>
     <li>El contenido del mensaje que escribes.</li>
     <li>La confirmación de que aceptas esta política.</li>
-    <li>La página desde la que se envió el formulario y la fecha y hora del envío.</li>
+    <li>El identificador de origen del formulario, la URL de la página desde la que se envió y la fecha y hora de recepción.</li>
   </ul>
+  <p>
+    El formulario incluye un campo técnico oculto (<em>honeypot</em>) para descartar envíos automatizados de spam sin
+    utilizar cookies ni rastreadores. Si ese campo contiene texto, el mensaje se descarta sin almacenarse.
+  </p>
   <p>
     No solicites ni incluyas contraseñas, claves de API, datos de tarjetas, información de salud ni otras
     categorías sensibles en el formulario. Si necesitamos acceder a un sistema para un diagnóstico, se acordará
@@ -54,7 +61,8 @@ import { site } from '../data/site';
   <p>
     El calendario de reservas se presta a través de Cal.com. Cuando reservas una llamada, los datos que
     introduces (por ejemplo, nombre, correo, fecha y hora) se gestionan en esa plataforma y se rigen también por
-    su propia política de privacidad. El calendario no se carga hasta que interactúas con él o lo autorizas.
+    su propia política de privacidad. El calendario no se carga hasta que te acercas a la sección de agenda o
+    interactúas con él.
   </p>
 
   <h3>Métricas del sitio</h3>
@@ -64,60 +72,113 @@ import { site } from '../data/site';
     publicidad ni se crean perfiles de navegación.
   </p>
 
-  <h2>3. Para qué usamos los datos</h2>
+  <h2>3. Para qué usamos los datos y con qué base jurídica</h2>
   <ul>
-    <li>Responder a tu consulta y darte la información que solicitas.</li>
-    <li>Valorar si el servicio encaja con tu caso y proponer una conversación.</li>
-    <li>Gestionar la agenda de llamadas y enviarte la confirmación correspondiente.</li>
-    <li>Mantener el historial necesario de la relación profesional, si decides contratar un servicio.</li>
-    <li>Detectar abusos, spam o intentos de comprometer la seguridad del sitio.</li>
+    <li>
+      <strong>Atender tu consulta y enviarte información:</strong> basado en tu consentimiento al enviar el
+      formulario o escribirnos y, cuando solicitas valorar un proyecto o presupuesto, en la aplicación de medidas
+      precontractuales a petición tuya.
+    </li>
+    <li>
+      <strong>Gestionar la agenda de llamadas:</strong> basado en tu solicitud de reserva y en las medidas
+      precontractuales necesarias para organizar la sesión.
+    </li>
+    <li>
+      <strong>Mantener el historial de la relación profesional:</strong> si decides contratar un servicio, basado en
+      la ejecución del contrato correspondiente y en el cumplimiento de las obligaciones legales aplicables.
+    </li>
+    <li>
+      <strong>Seguridad y prevención de abusos o spam:</strong> basado en el interés legítimo del responsable en
+      proteger la disponibilidad y la integridad técnica del sitio.
+    </li>
   </ul>
   <p>
-    La base para tratar los datos del formulario es tu consentimiento al enviarlo y, cuando corresponda, la
-    aplicación de medidas precontractuales a petición tuya. Para el correo directo, la base es el interés en
-    responder a la comunicación que iniciaste. Puedes retirar tu consentimiento en cualquier momento escribiendo
-    a {site.email}, sin que ello afecte a la licitud del tratamiento previo.
+    Cuando el tratamiento se base en tu consentimiento, puedes retirarlo en cualquier momento escribiendo a
+    <a href={`mailto:${site.email}`}>{site.email}</a>, sin que ello afecte a la licitud del tratamiento realizado
+    antes de su retirada.
   </p>
 
   <h2>4. Cuánto tiempo los conservamos</h2>
-  <p>
-    Conservamos los datos durante el tiempo necesario para atender tu solicitud y mantener el seguimiento de la
-    conversación. Si no se formaliza una relación profesional, se eliminarán o anonimizarán cuando dejen de ser
-    necesarios y, en todo caso, cuando solicites su supresión. Si existe una relación contractual, se
-    conservarán durante su vigencia y el tiempo adicional que exija la legislación aplicable.
-  </p>
+  <ul>
+    <li>
+      <strong>Bandeja técnica del formulario (Cloudflare Workers KV):</strong> los mensajes recibidos a través de
+      <code>/api/contacto</code> se guardan de forma temporal con una caducidad automática de <strong>180 días</strong>,
+      tras los cuales se eliminan de manera automática. Si solicitas su supresión antes de ese plazo, se eliminarán
+      manualmente.
+    </li>
+    <li>
+      <strong>Conversaciones por correo y seguimiento:</strong> los mensajes recibidos por correo electrónico o como
+      aviso del formulario se conservan durante el tiempo necesario para responder a tu consulta y dar seguimiento a
+      la conversación. Si no se inicia una relación profesional, se eliminan cuando dejan de ser necesarios o cuando
+      solicitas su supresión.
+    </li>
+    <li>
+      <strong>Relación contractual:</strong> si contratas un servicio, los datos asociados se conservarán mientras
+      dure el proyecto y durante los plazos adicionales exigidos por la legislación aplicable para atender posibles
+      responsabilidades legales o fiscales.
+    </li>
+  </ul>
 
-  <h2>5. Quién puede acceder a los datos</h2>
+  <h2>5. Quién puede acceder a los datos y transferencias internacionales</h2>
   <p>
-    No vendemos ni alquilamos datos personales. Para operar el sitio y responder a las solicitudes, podemos
-    utilizar proveedores que actúan como encargados del tratamiento o responsables independientes, entre ellos:
+    No vendemos, alquilamos ni cedemos tus datos personales con fines comerciales o publicitarios. Para operar el
+    sitio y responder a tus solicitudes nos apoyamos en proveedores de infraestructura que actúan como encargados
+    del tratamiento o, en su caso, bajo sus propias condiciones del servicio:
   </p>
   <ul>
-    <li><strong>Cloudflare</strong>, para el alojamiento del sitio, la seguridad y las métricas agregadas.</li>
-    <li><strong>Cal.com</strong>, para la gestión de la agenda de llamadas.</li>
-    <li>El proveedor de correo y el proveedor de automatización o webhook que recibe el formulario.</li>
+    <li>
+      <strong>Cloudflare, Inc.</strong>: alojamiento del sitio, red de distribución (CDN), seguridad, métricas
+      agregadas sin cookies (Cloudflare Web Analytics), ejecución de la API del formulario (Cloudflare Workers) y
+      almacenamiento temporal de los envíos (Cloudflare Workers KV).
+    </li>
+    <li>
+      <strong>Resend (Plus Five Five, Inc.)</strong> y el proveedor del buzón de correo profesional: envío del aviso
+      transaccional interno cuando entra un mensaje por el formulario y recepción/respuesta de correos en
+      <code>{site.email}</code>.
+    </li>
+    <li>
+      <strong>Cal.com, Inc.</strong>: gestión de la agenda de llamadas cuando decides reservar una sesión.
+    </li>
   </ul>
   <p>
-    Estos proveedores pueden tratar datos fuera de tu país. Cuando sea necesario, se aplicarán las garantías
-    contractuales y organizativas que correspondan conforme a la normativa aplicable. También podríamos revelar
-    información si lo exige una autoridad competente o si es necesario para proteger derechos y seguridad.
+    El responsable opera desde Venezuela y los proveedores técnicos indicados están establecidos principalmente en
+    Estados Unidos y operan infraestructura global. Por ello, si nos escribes desde España, el Espacio Económico
+    Europeo u otro país de Latinoamérica, tus datos serán objeto de transferencia internacional. Dichos proveedores
+    aplican cláusulas contractuales tipo aprobadas por la Comisión Europea y/o participan en marcos reconocidos de
+    protección de datos (como el Marco de Privacidad de Datos UE-EE. UU., cuando resulta aplicable), además de
+    cifrado en tránsito y controles de acceso restringido.
+  </p>
+  <p>
+    Fuera de estos proveedores técnicos, solo comunicaríamos datos si existe una obligación legal exigible por una
+    autoridad competente.
   </p>
 
   <h2>6. Tus derechos</h2>
   <p>
-    Puedes solicitar el acceso a tus datos, su rectificación, su supresión, la limitación de su tratamiento, la
-    oposición a determinados usos y la portabilidad cuando sea aplicable. También puedes retirar el consentimiento
-    que hayas otorgado.
+    Cualquier persona tiene derecho a conocer qué datos suyos se tratan y con qué finalidad. De acuerdo con la
+    normativa aplicable (incluyendo el Reglamento General de Protección de Datos en la Unión Europea, la LOPDGDD en
+    España y las garantías constitucionales de acceso, actualización, rectificación y destrucción de datos en
+    Venezuela), puedes solicitar:
+  </p>
+  <ul>
+    <li>El <strong>acceso</strong> a tus datos personales.</li>
+    <li>La <strong>rectificación</strong> o actualización de datos inexactos o incompletos.</li>
+    <li>La <strong>supresión</strong> o destrucción de tus datos cuando ya no sean necesarios o retires tu consentimiento.</li>
+    <li>La <strong>limitación</strong> del tratamiento o la <strong>oposición</strong> a determinados usos.</li>
+    <li>La <strong>portabilidad</strong> de tus datos cuando proceda técnicamente y legalmente.</li>
+  </ul>
+  <p>
+    Para ejercer estos derechos, escribe a <a href={`mailto:${site.email}`}>{site.email}</a> indicando qué derecho
+    deseas ejercer y el correo con el que nos contactaste para poder localizar la información. Si existen dudas
+    razonables sobre la identidad del solicitante, podremos pedir una verificación mínima para evitar que terceros
+    accedan a tus datos. Responderemos a la mayor brevedad y, en todo caso, en un plazo máximo de un (1) mes.
   </p>
   <p>
-    Para ejercer estos derechos, escribe a <a href={`mailto:${site.email}`}>{site.email}</a> indicando el
-    derecho que deseas ejercer y la información necesaria para localizar tus datos. Podremos pedirte una
-    verificación razonable de identidad para evitar que terceros accedan a tu información. Responderemos dentro
-    de un plazo razonable y, como máximo, el que establezca la normativa aplicable.
-  </p>
-  <p>
-    Si consideras que el tratamiento no es correcto, puedes presentar una reclamación ante la autoridad de
-    protección de datos competente. También puedes escribirnos antes para intentar resolverlo de forma directa.
+    Si consideras que el tratamiento de tus datos no ha sido adecuado, te invitamos a escribirnos primero a
+    <a href={`mailto:${site.email}`}>{site.email}</a> para resolverlo directamente. Asimismo, tienes derecho a
+    presentar una reclamación ante la autoridad de control competente según tu lugar de residencia (por ejemplo, la
+    Agencia Española de Protección de Datos, <a href="https://www.aepd.es/" target="_blank" rel="noopener noreferrer">aepd.es</a>,
+    si te encuentras en España).
   </p>
 
   <h2>7. Cookies y tecnologías similares</h2>

@@ -6,8 +6,11 @@
  * los assets, sin invocar el script.
  *
  * Variables y bindings:
- * - `ORINOCO_FORMS_QUEUE`: namespace KV donde se guardan los mensajes.
+ * - `ORINOCO_FORMS_QUEUE`: namespace KV donde se guardan los mensajes (TTL 180 días).
  * - `ADMIN_TOKEN`: secreto para leer la bandeja desde `/api/admin/messages`.
+ * - `RESEND_API_KEY`: secreto opcional para enviar aviso por correo vía Resend.
+ * - `NOTIFY_EMAIL`: correo opcional de destino (por defecto `hola@orinocoaisolutions.com`).
+ * - `FROM_EMAIL`: remitente verificado opcional en Resend (por defecto `Orinoco AI Solutions <notificaciones@orinocoaisolutions.com>`).
  */
 
 interface KVNamespace {
@@ -20,9 +23,27 @@ interface KVNamespace {
   list(options?: { prefix?: string; limit?: number }): Promise<{ keys: Array<{ name: string }> }>;
 }
 
+interface ExecutionContext {
+  waitUntil(promise: Promise<unknown>): void;
+}
+
 interface Env {
   ORINOCO_FORMS_QUEUE: KVNamespace;
   ADMIN_TOKEN: string;
+  RESEND_API_KEY?: string;
+  NOTIFY_EMAIL?: string;
+  FROM_EMAIL?: string;
+}
+
+interface ContactSubmission {
+  key: string;
+  name: string;
+  email: string;
+  company: string;
+  message: string;
+  page: string;
+  source: string;
+  receivedAt: string;
 }
 
 const MAX_BODY_BYTES = 16 * 1024;
@@ -34,6 +55,9 @@ const MAX_PAGE = 500;
 const MAX_SOURCE = 200;
 const RETENTION_SECONDS = 60 * 60 * 24 * 180;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const DEFAULT_NOTIFY_EMAIL = 'hola@orinocoaisolutions.com';
+const DEFAULT_FROM_EMAIL = 'Orinoco AI Solutions <notificaciones@orinocoaisolutions.com>';
+const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 
 function json(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), {
@@ -51,11 +75,11 @@ function read(value: unknown): string {
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx?: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
     if (url.pathname === '/api/contacto') {
-      return handleContact(request, env);
+      return handleContact(request, env, ctx);
     }
 
     if (url.pathname === '/api/admin/messages') {
@@ -66,7 +90,11 @@ export default {
   },
 };
 
-async function handleContact(request: Request, env: Env): Promise<Response> {
+async function handleContact(
+  request: Request,
+  env: Env,
+  ctx?: ExecutionContext,
+): Promise<Response> {
   if (request.method !== 'POST') return json(405, { ok: false, error: 'method' });
 
   const contentType = (request.headers.get('Content-Type') ?? '').toLowerCase();
@@ -126,7 +154,75 @@ async function handleContact(request: Request, env: Env): Promise<Response> {
     },
   );
 
+  const submission: ContactSubmission = {
+    key,
+    name,
+    email,
+    company,
+    message,
+    page,
+    source,
+    receivedAt,
+  };
+
+  if (ctx?.waitUntil) {
+    ctx.waitUntil(sendNotificationEmail(env, submission));
+  } else {
+    await sendNotificationEmail(env, submission);
+  }
+
   return json(200, { ok: true });
+}
+
+async function sendNotificationEmail(env: Env, submission: ContactSubmission): Promise<void> {
+  const apiKey = read(env.RESEND_API_KEY);
+  if (!apiKey) return;
+
+  const to = read(env.NOTIFY_EMAIL) || DEFAULT_NOTIFY_EMAIL;
+  const from = read(env.FROM_EMAIL) || DEFAULT_FROM_EMAIL;
+  const subjectName = submission.name.replace(/[\r\n]+/g, ' ').trim();
+  const subjectCompany = submission.company
+    ? ` (${submission.company.replace(/[\r\n]+/g, ' ').trim()})`
+    : '';
+
+  const textLines = [
+    `Nuevo mensaje desde el formulario de Orinoco AI Solutions`,
+    ``,
+    `Nombre: ${submission.name}`,
+    `Correo: ${submission.email}`,
+    `Empresa: ${submission.company || 'No indicada'}`,
+    `Fecha (UTC): ${submission.receivedAt}`,
+    `Página: ${submission.page || 'No indicada'}`,
+    `Origen: ${submission.source || 'No indicado'}`,
+    `Clave KV: ${submission.key}`,
+    ``,
+    `Mensaje:`,
+    submission.message,
+  ];
+
+  try {
+    const response = await fetch(RESEND_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from,
+        to: [to],
+        reply_to: submission.email,
+        subject: `Nuevo contacto: ${subjectName}${subjectCompany}`,
+        text: textLines.join('\n'),
+      }),
+    });
+
+    if (!response.ok) {
+      const details = await response.text().catch(() => '');
+      console.error(`Resend notification error (${response.status}): ${details.slice(0, 300)}`);
+    }
+  } catch (error) {
+    console.error('Resend notification exception:', error);
+  }
 }
 
 async function handleAdmin(request: Request, env: Env): Promise<Response> {

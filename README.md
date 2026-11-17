@@ -1,12 +1,12 @@
 # Orinoco AI Solutions
 
-Sitio web estático de **Orinoco AI Solutions**, un estudio de automatización e IA aplicada con base en Ciudad Bolívar, Venezuela. El sitio está pensado para publicarse en Cloudflare Pages y está escrito íntegramente en español.
+Sitio web de **Orinoco AI Solutions**, un estudio de automatización e IA aplicada con base en Ciudad Bolívar, Venezuela. El sitio se despliega en Cloudflare Workers (con static assets y una API ligera para el formulario de contacto) y está escrito íntegramente en español.
 
 - Sitio: `https://orinocoaisolutions.com`
-- Stack: Astro 7, Tailwind CSS 4, Content Collections, TypeScript
-- Salida: HTML estático en `dist/`
+- Stack: Astro 7, Tailwind CSS 4, Content Collections, TypeScript, Cloudflare Workers + KV
+- Salida: HTML estático en `dist/` + Worker en `worker/index.ts` (`/api/*`)
 - Sin framework de UI adicional (no React, no Vue)
-- Sin cookies de analítica: Cloudflare Web Analytics se activa desde el panel de Cloudflare Pages
+- Sin cookies de analítica: Cloudflare Web Analytics se activa desde el panel de Cloudflare
 
 ## Requisitos
 
@@ -18,24 +18,28 @@ Sitio web estático de **Orinoco AI Solutions**, un estudio de automatización e
 ```bash
 npm install
 cp .env.example .env
-# Edita .env con tu URL de Cal.com y tu webhook real
+# Edita .env con tu URL de Cal.com y PUBLIC_FORM_ENDPOINT=/api/contacto
 npm run dev
 ```
 
-El sitio queda disponible en `http://localhost:4321`.
+El sitio queda disponible en `http://localhost:4321`. Para probar localmente el Worker (`/api/contacto` y `/api/admin/messages`) junto a los assets estáticos, ejecuta `npm run build && npx wrangler dev`.
 
 ## Variables de entorno
 
-Astro valida las variables con `astro:env` y falla el build si faltan.
+Astro valida las variables públicas con `astro:env` y falla el build si faltan.
 
 | Variable | Contexto | Obligatoria | Descripción |
 | --- | --- | --- | --- |
-| `PUBLIC_CAL_URL` | Cliente | Sí | URL completa del evento de Cal.com. Ejemplo: `https://cal.com/petercordovadev/auditoria` |
-| `PUBLIC_FORM_ENDPOINT` | Cliente | Sí | Endpoint que recibe el formulario por `POST` en JSON. En producción: `/api/contacto` |
+| `PUBLIC_CAL_URL` | Cliente (build) | Sí | URL completa del evento de Cal.com. Ejemplo: `https://cal.com/petercordovadev/auditoria` |
+| `PUBLIC_FORM_ENDPOINT` | Cliente (build) | Sí | Endpoint que recibe el formulario por `POST` en JSON. En producción: `/api/contacto` |
+| `ADMIN_TOKEN` | Worker (secreto runtime) | Sí | Token Bearer para consultar `/api/admin/messages` |
+| `RESEND_API_KEY` | Worker (secreto runtime) | No | Clave de API de Resend para enviar aviso por correo en cada nuevo mensaje |
+| `NOTIFY_EMAIL` | Worker (runtime) | No | Correo que recibe el aviso (por defecto `hola@orinocoaisolutions.com`) |
+| `FROM_EMAIL` | Worker (runtime) | No | Remitente verificado en Resend (por defecto `Orinoco AI Solutions <notificaciones@orinocoaisolutions.com>`) |
 
-Ambas son públicas: se incluyen en el HTML y en el JavaScript del navegador. **No pongas secretos en variables `PUBLIC_*`.**
+`PUBLIC_CAL_URL` y `PUBLIC_FORM_ENDPOINT` son públicas: se incluyen en el HTML y en el JavaScript del navegador. **No pongas secretos en variables `PUBLIC_*`.**
 
-En Cloudflare Workers Builds, configúralas en **Settings → Build → Build variables and secrets** para Production y Preview. Las de **Settings → Variables & Secrets** son solo de runtime y `npm run build` no las recibe. Si tu proyecto necesita fijar la versión de Node, añade `NODE_VERSION=22.23.4`.
+En Cloudflare Workers Builds, configura las variables `PUBLIC_*` en **Settings → Build → Build variables and secrets** para Production y Preview. Los secretos del Worker (`ADMIN_TOKEN`, `RESEND_API_KEY` y opcionalmente `NOTIFY_EMAIL` / `FROM_EMAIL`) van en **Settings → Variables & Secrets** (runtime). Si tu proyecto necesita fijar la versión de Node, añade `NODE_VERSION=22.23.4`.
 
 ## Comandos
 
@@ -56,10 +60,11 @@ npm run check && npm run build
 ## Estructura
 
 ```text
+wrangler.jsonc            Configuración del Worker, static assets y binding de KV
 docs/
   state-machines.md       Contrato de estados de formulario, Cal, menú, FAQ y build
 worker/
-  index.ts                API del formulario (/api/contacto) y bandeja protegida
+  index.ts                API del formulario (/api/contacto), aviso Resend y bandeja protegida
 src/
   assets/                 Ilustraciones propias (hero, servicios, blog)
   components/             Header, footer, tarjetas, formulario, embed de Cal.com, SEO...
@@ -81,7 +86,7 @@ src/
   pages/                  Rutas del sitio
   styles/global.css       Tokens de diseño y estilos globales
 public/
-  _headers                Cabeceras de seguridad y caché para Cloudflare Pages
+  _headers                Cabeceras de seguridad y caché para Workers static assets
   robots.txt
   og-image.png
   favicons
@@ -181,9 +186,11 @@ Requisitos del endpoint:
 - No redirigir la petición: el formulario muestra el éxito o el error en la misma página.
 - Responder en menos de 15 segundos (el cliente cancela la petición después).
 
-El endpoint de producción es `/api/contacto`, servido por el Worker del sitio (`worker/index.ts`). Al ser mismo origen, no hay preflight ni CORS. El Worker valida el payload, escribe en el KV `ORINOCO_FORMS_QUEUE` y responde JSON.
+El endpoint de producción es `/api/contacto`, servido por el Worker del sitio (`worker/index.ts`). Al ser mismo origen, no hay preflight ni CORS. El Worker valida el payload, escribe en el KV `ORINOCO_FORMS_QUEUE` con una retención automática de **180 días** (`expirationTtl`) y responde JSON.
 
-La bandeja de lectura vive en `/api/admin/messages` y exige `Authorization: Bearer <ADMIN_TOKEN>`. `ADMIN_TOKEN` es un secreto del Worker, nunca una variable `PUBLIC_*`.
+Si el secreto `RESEND_API_KEY` está configurado en el Worker, tras guardar el mensaje en KV se dispara en segundo plano (`ctx.waitUntil`) una notificación por correo mediante la API de Resend hacia `NOTIFY_EMAIL` (por defecto `hola@orinocoaisolutions.com`) con `Reply-To` al correo del remitente. Este envío es *best-effort*: cualquier fallo en Resend se registra en los logs del Worker pero nunca bloquea ni hace fallar la respuesta del formulario.
+
+La bandeja de lectura vive en `/api/admin/messages` y exige `Authorization: Bearer <ADMIN_TOKEN>`. `ADMIN_TOKEN` y `RESEND_API_KEY` son secretos del Worker, nunca variables `PUBLIC_*`.
 
 El formulario incluye un campo honeypot llamado `website`. Si llega con contenido, se ignora el envío. No sustituyas el honeypot por una validación que bloquee usuarios reales.
 
@@ -191,7 +198,7 @@ El formulario incluye un campo honeypot llamado `website`. Si llega con contenid
 
 ## Despliegue en Cloudflare Workers
 
-El sitio se despliega como **Worker con static assets**, no como Pages. `wrangler.jsonc` declara el entrypoint de la API (`worker/index.ts`), el directorio de assets (`./dist`) y el binding de KV.
+El sitio se despliega como **Worker con static assets**, no como Pages. `wrangler.jsonc` declara el entrypoint de la API (`worker/index.ts`), el directorio de assets (`./dist`) y el binding de KV (`ORINOCO_FORMS_QUEUE`).
 
 1. Sube el repositorio a GitHub.
 2. En Cloudflare, entra en **Workers & Pages → Create → Connect to Git** y selecciona el repositorio.
@@ -202,7 +209,10 @@ El sitio se despliega como **Worker con static assets**, no como Pages. `wrangle
 4. Añade en **Settings → Build → Build variables and secrets** (Production y Preview):
    - `PUBLIC_CAL_URL`
    - `PUBLIC_FORM_ENDPOINT=/api/contacto`
-5. Añade el secreto `ADMIN_TOKEN` en **Settings → Variables & Secrets**.
+5. Añade los secretos de runtime en **Settings → Variables & Secrets**:
+   - `ADMIN_TOKEN` (obligatorio para `/api/admin/messages`)
+   - `RESEND_API_KEY` (para el aviso por correo de nuevos mensajes)
+   - `NOTIFY_EMAIL` y `FROM_EMAIL` (opcionales, si deseas cambiar los valores por defecto)
 6. Despliega.
 7. En **Settings → Domains & Routes**, añade `orinocoaisolutions.com` y el dominio `www` si lo usas. Configura el DNS según indique Cloudflare.
 8. En **Metrics → Web Analytics**, activa la analítica. Cloudflare la inyecta automáticamente en las páginas; no hay token que pegar en el código.
@@ -262,16 +272,3 @@ Si prefieres usar fotografías o ilustraciones propias:
 - Estados de envío y del calendario anunciados con `role="status"`/`role="alert"` y `aria-busy`.
 - `prefers-reduced-motion` respetado.
 - Objetivo Lighthouse: 95+ en rendimiento, accesibilidad, buenas prácticas y SEO.
-
-## Pendientes antes de publicar
-
-- [ ] Reemplazar el email de ejemplo `hola@orinocoaisolutions.com` si el definitivo es otro (`src/data/site.ts`).
-- [ ] Configurar un `PUBLIC_FORM_ENDPOINT` real y probar el envío.
-- [ ] Confirmar la redirección de Cal.com a `/gracias/`.
-- [ ] Añadir la URL de la página de empresa de LinkedIn en `site.linkedinCompany` cuando exista.
-- [ ] Revisar los textos legales con asesoría profesional si el negocio opera con clientes de la UE.
-- [ ] Ejecutar Lighthouse sobre el dominio desplegado.
-
-## Estado del repositorio
-
-Este proyecto se ha construido y validado en local. No se ha desplegado, no se ha creado un remoto y no se han hecho commits ni push. El despliegue en Cloudflare Pages queda a cargo del propietario del proyecto.
